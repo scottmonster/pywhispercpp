@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# this script uninstalls pywhispercpp and cleans up after pip install -e .
+
+set -euo pipefail
+
+project_root="$PWD"
+local_venv="$project_root/.venv"
+previous_venv="${VIRTUAL_ENV:-}"
+activated_local_venv=0
+
+activate_venv() {
+	# shellcheck disable=SC1091
+	source "$1/bin/activate"
+}
+
+restore_venv() {
+	if [[ "$activated_local_venv" -eq 1 ]]; then
+		deactivate || true
+	fi
+
+	if [[ -n "$previous_venv" && "$previous_venv" != "$local_venv" ]]; then
+		activate_venv "$previous_venv"
+	fi
+}
+
+trap restore_venv EXIT
+
+if [[ "${VIRTUAL_ENV:-}" != "$local_venv" ]]; then
+	if [[ -n "${VIRTUAL_ENV:-}" ]]; then
+		deactivate || true
+	fi
+
+	if [[ -d "$local_venv" ]]; then
+		activate_venv "$local_venv"
+		activated_local_venv=1
+	fi
+fi
+
+python -m pip uninstall -y pywhispercpp || true
+
+shopt -s nullglob
+
+artifacts=(
+	"$project_root"/libggml*
+	"$project_root"/libwhisper*
+	"$project_root"/_pywhispercpp*.so
+	"$project_root"/_version.py
+	"$project_root"/pywhispercpp.egg-info
+)
+
+if [[ "${#artifacts[@]}" -gt 0 ]]; then
+	rm -rf -- "${artifacts[@]}"
+fi

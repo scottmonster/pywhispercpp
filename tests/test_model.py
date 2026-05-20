@@ -68,13 +68,26 @@ class TestModel(TestCase):
         params.set_prompt_tokens((1, 2, 3))
         self.assertEqual(params.prompt_n_tokens, 3)
 
+    def test_model_accepts_prompt_tokens(self):
+        model = Model(
+            "tiny",
+            models_dir=str(WHISPER_CPP_DIR/'models'),
+            prompt_tokens=(1, 2, 3),
+            prompt_n_tokens=99,
+        )
+        self.assertEqual(tuple(model._params.prompt_tokens), (1, 2, 3))
+        self.assertEqual(model._params.prompt_n_tokens, 3)
+
     def test_grammar_helper_exists(self):
         params = pw.whisper_full_default_params(
             pw.whisper_sampling_strategy.WHISPER_SAMPLING_GREEDY
         )
         params.set_grammar('root ::= "yes" | "no"', 'root', 42.0)
+        self.assertGreater(params.n_grammar_rules, 0)
+        self.assertIsInstance(params.grammar_rules, list)
         self.assertEqual(params.grammar_penalty, 42.0)
         params.clear_grammar()
+        self.assertEqual(params.n_grammar_rules, 0)
 
     def test_model_accepts_grammar_param(self):
         model = Model(
@@ -85,6 +98,8 @@ class TestModel(TestCase):
             grammar_penalty=42.0,
         )
         self.assertIsInstance(model, Model)
+        self.assertGreater(model._params.n_grammar_rules, 0)
+        self.assertEqual(model._params.grammar_penalty, 42.0)
 
     def test_model_metadata_bindings(self):
         self.assertIsInstance(pw.whisper_model_type_readable(self.model._ctx), str)
