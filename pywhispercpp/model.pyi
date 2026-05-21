@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional, TextIO, Tuple, TypedDict, Union
+from typing import Any, Callable, Dict, List, Optional, TextIO, Tuple, TypedDict, TypeAlias, Union
 
 import numpy as np
 import numpy.typing as npt
 
-AudioArray = npt.NDArray[np.float32]
-AudioInput = Union[str, AudioArray]
-
+AudioArray: TypeAlias = npt.NDArray[np.float32]
+AudioInput: TypeAlias = Union[str, AudioArray]
 
 class ContextParams(TypedDict, total=False):
     use_gpu: bool
@@ -40,6 +39,7 @@ class Segment:
 
 
 class Model:
+    model_path: str
     _new_segment_callback: Optional[Callable[[Segment], None]]
 
     def __init__(
@@ -52,6 +52,7 @@ class Model:
         openvino_model_path: Optional[str] = None,
         openvino_device: str = 'CPU',
         openvino_cache_dir: Optional[str] = None,
+        context_params: Optional[ContextParams] = None,
         *,
         n_threads: Optional[int] = None,
         n_max_text_ctx: int = 16384,
@@ -75,8 +76,6 @@ class Model:
         audio_ctx: int = 0,
         tdrz_enable: bool = False,
         initial_prompt: Optional[str] = None,
-        grammar: Optional[str] = None,
-        grammar_rule: str = 'root',
         prompt_tokens: Optional[Tuple[Any, ...]] = None,
         prompt_n_tokens: int = 0,
         carry_initial_prompt: bool = False,
@@ -129,8 +128,6 @@ class Model:
         audio_ctx: int = 0,
         tdrz_enable: bool = False,
         initial_prompt: Optional[str] = None,
-        grammar: Optional[str] = None,
-        grammar_rule: str = 'root',
         prompt_tokens: Optional[Tuple[Any, ...]] = None,
         prompt_n_tokens: int = 0,
         carry_initial_prompt: bool = False,
@@ -147,7 +144,6 @@ class Model:
         entropy_thold: float = 2.4,
         logprob_thold: float = -1.0,
         no_speech_thold: float = 0.6,
-        grammar_penalty: float = 100.0,
         greedy: GreedyParams = {'best_of': 5},
         beam_search: BeamSearchParams = {'beam_size': -1, 'patience': -1.0},
         extract_probability: bool = False,

@@ -242,6 +242,12 @@ PARAMS_SCHEMA = {  # as exactly presented in whisper.cpp
             'options': None,
             'default': False
     },
+    'suppress_regex': {
+            'type': str,
+            'description': 'regex pattern used to suppress matching text during decoding',
+            'options': None,
+            'default': ''
+    },
     'temperature': {
             'type': float,
             'description': 'initial decoding temperature',
@@ -284,12 +290,6 @@ PARAMS_SCHEMA = {  # as exactly presented in whisper.cpp
             'options': None,
             'default': 0.6
     },
-    'grammar_penalty': {
-            'type': float,
-            'description': 'scales down logits of non-grammar tokens',
-            'options': None,
-            'default': 100.0
-    },
     'greedy': {
             'type': dict,
             'description': 'greedy',
@@ -300,7 +300,7 @@ PARAMS_SCHEMA = {  # as exactly presented in whisper.cpp
             'type': dict,
             'description': 'beam_search',
             'options': None,
-            'default': {"beam_size": 5, "patience": -1.0}
+            'default': {"beam_size": -1, "patience": -1.0}
     },
     'extract_probability': {
             'type': bool,
