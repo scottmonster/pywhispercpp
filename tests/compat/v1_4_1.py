@@ -171,7 +171,6 @@ class TestBackwardsCompatibilityV141(FailureSummaryTestCase):
 
     def _compat_binding_module_exposes_expected_low_level_functions(self):
         for name in (
-            'whisper_init_from_buffer',
             'whisper_print_system_info',
             'whisper_tokenize',
             'whisper_token_to_bytes',

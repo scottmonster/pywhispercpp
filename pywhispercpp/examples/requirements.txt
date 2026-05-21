@@ -1,0 +1,4 @@
+sounddevice
+webrtcvad
+PyQt5
+ffmpeg-python

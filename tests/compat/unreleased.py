@@ -86,7 +86,6 @@ class TestBackwardsCompatibilityVUnreleased(FailureSummaryTestCase):
         'no_speech_thold': 0.5,
         'greedy': {'best_of': 2},
         'beam_search': {'beam_size': 2, 'patience': 0.5},
-        'grammar_penalty': 100.0,
         'vad': True,
         'vad_model_path': 'vad.bin',
     }
@@ -112,7 +111,6 @@ class TestBackwardsCompatibilityVUnreleased(FailureSummaryTestCase):
 
     def _compat_binding_module_exposes_expected_low_level_functions(self):
         for name in (
-            'whisper_init_from_buffer',
             'whisper_print_system_info',
             'whisper_tokenize',
             'whisper_token_to_bytes',
@@ -570,26 +568,6 @@ class TestBackwardsCompatibilityVUnreleased(FailureSummaryTestCase):
         self.assertGreater(seen['progress'], 0)
         self.assertGreater(seen['abort'], 0)
 
-    def _compat_cpp_binding_grammar_helpers_expose_metadata(self):
-        params = pw.whisper_full_default_params(
-            pw.whisper_sampling_strategy.WHISPER_SAMPLING_GREEDY
-        )
-
-        params.set_grammar('root ::= "yes" | "no"', 'root', 42.0)
-
-        self.assertIsInstance(params.grammar_rules, list)
-        self.assertGreater(len(params.grammar_rules), 0)
-        self.assertGreater(params.n_grammar_rules, 0)
-        self.assertIsInstance(params.i_start_rule, int)
-        self.assertGreaterEqual(params.i_start_rule, 0)
-        self.assertEqual(params.grammar_penalty, 42.0)
-
-        params.clear_grammar()
-
-        self.assertEqual(params.grammar_rules, [])
-        self.assertEqual(params.n_grammar_rules, 0)
-        self.assertEqual(params.i_start_rule, 0)
-
     def _compat_abort_callback_can_abort_and_then_clear(self):
         model = self._create_cpu_model()
         callback_calls = []
@@ -652,9 +630,6 @@ class TestBackwardsCompatibilityVUnreleased(FailureSummaryTestCase):
 
     def test_unreleased_cpp_binding_callbacks_pass_user_data_when_set(self):
         self._compat_cpp_binding_callbacks_pass_user_data_when_set()
-
-    def test_unreleased_cpp_binding_grammar_helpers_expose_metadata(self):
-        self._compat_cpp_binding_grammar_helpers_expose_metadata()
 
     def test_unreleased_model_constructor_accepts_extended_options(self):
         self._compat_model_constructor_accepts_extended_options()

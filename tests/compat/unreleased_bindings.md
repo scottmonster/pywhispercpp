@@ -3,11 +3,12 @@
 ## 1. Notes
 
 - This reflects the current unreleased bindings in `src/main.cpp`.
-- Compared with v1.4.1, `whisper_full_params` now exposes several previously missing fields, including `no_timestamps`, `debug_mode`, `tdrz_enable`, `carry_initial_prompt`, `detect_language`, `suppress_nst`, and `grammar_penalty`.
+- Compared with v1.4.1, `whisper_full_params` now exposes several previously missing fields, including `no_timestamps`, `debug_mode`, `tdrz_enable`, `carry_initial_prompt`, `detect_language`, and `suppress_nst`.
 - Abort handling is now available through both `params.set_abort_callback(...)` / `params.clear_abort_callback()` and the module-level helpers `assign_abort_callback(...)` / `clear_abort_callback(...)`.
 - `new_segment_callback`, `encoder_begin_callback`, and `logits_filter_callback` remain helper-only callback bindings, but now follow the same wrapper-managed Python callback and `*_user_data` storage model as the newer callback helpers.
 - `prompt_tokens` is now wrapper-managed and available through both the compatibility attribute `params.prompt_tokens` and dedicated helpers (`params.set_prompt_tokens(...)` / `params.clear_prompt_tokens()`), while the underlying C pointer remains wrapper-managed.
 - `progress_callback` is available through both the compatibility attribute `params.progress_callback` and dedicated helpers (`params.set_progress_callback(...)` / `params.clear_progress_callback()` and `assign_progress_callback(...)` / `clear_progress_callback(...)`), while the underlying C callback remains wrapper-managed.
+- Grammar support is not exposed by the Python bindings because it would require the whisper examples grammar-parser surface.
 - Callback helpers only pass a trailing `user_data` argument when a Python `*_callback_user_data` value was explicitly set.
 
 ## 2. `whisper_full_params` Coverage
@@ -54,10 +55,6 @@
 - `no_speech_thold` via params.no_speech_thold
 - `greedy` via params.greedy (dict wrapper, for example `{"best_of": 2}`)
 - `beam_search` via params.beam_search (dict wrapper, for example `{"beam_size": 2, "patience": 0.5}`)
-- `grammar_rules` via params.grammar_rules **(read-only Python list view of the parsed grammar; not a raw writable pointer field)**
-- `n_grammar_rules` via params.n_grammar_rules
-- `i_start_rule` via params.i_start_rule
-- `grammar_penalty` via params.grammar_penalty
 - `vad` via params.vad
 - `vad_model_path` via params.vad_model_path
 - `vad_params` via params.vad_params
@@ -77,6 +74,12 @@
 - `new_segment_callback` as a direct writable field (helper-only path)
 - `encoder_begin_callback` as a direct writable field (helper-only path)
 - `logits_filter_callback` as a direct writable field (helper-only path)
+- `grammar_rules`
+- `n_grammar_rules`
+- `i_start_rule`
+- `grammar_penalty`
+- `set_grammar(...)`
+- `clear_grammar()`
 
 ## 3. Broader `_pywhispercpp` Low-Level API
 

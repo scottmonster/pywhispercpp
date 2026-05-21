@@ -15,6 +15,7 @@ libwhisper*
 # ignore downloaded source code... really this is just for quickly checking previous versions
 pywhispercpp-*.*
 
+.vscode
 
 
 # custom
